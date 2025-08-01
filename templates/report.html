@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detection Reports</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34495e;
+      --accent-color: #e74c3c;
+      --background-color: #ecf0f1;
+      --card-bg: #ffffff;
+      --text-primary: #2c3e50;
+      --text-secondary: #7f8c8d;
+      --text-light: #ffffff;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Unified Sticky Header */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      padding: 10px 20px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    
+    .header-title {
+      color: var(--text-light);
+      font-size: 1.8rem;
+      font-weight: 500;
+      margin: 0;
+      margin-right: 15px;
+    }
+    
+    .btn-custom {
+      background-color: var(--secondary-color);
+      color: var(--text-light);
+      border: none;
+      padding: 8px 15px;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+    .btn-custom:hover {
+      background-color: var(--accent-color);
+    }
+    
+    .form-select, .form-control {
+      border-radius: var(--border-radius);
+      border: 1px solid var(--text-secondary);
+    }
+    
+    /* Adjusted widths for compact elements */
+    .small-input {
+      max-width: 120px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      .header-row > * {
+        margin-bottom: 10px;
+      }
+    }
+    
+    /* Cards and Other Content */
+    .card {
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .card-header {
+      background-color: var(--secondary-color);
+      color: var(--text-light);
+      border-bottom: none;
+      padding: 15px 20px;
+    }
+    .card-body {
+      padding: 20px;
+    }
+    .info-badge {
+      background-color: var(--background-color);
+      color: var(--text-secondary);
+      padding: 5px 10px;
+      border-radius: var(--border-radius);
+      font-size: 0.9rem;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+    .match-details {
+      background-color: var(--background-color);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-top: 15px;
+    }
+    .match-item {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid var(--text-secondary);
+    }
+    .confidence-badge {
+      background-color: var(--accent-color);
+      color: var(--text-light);
+      padding: 3px 8px;
+      border-radius: var(--border-radius);
+      font-size: 0.8rem;
+    }
+    .match-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--border-radius);
+      margin-top: 10px;
+    }
+    .alert {
+      border-radius: var(--border-radius);
+    }
+    .reports-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust spacing */
+    justify-content: center;
+    align-items: stretch; /* Ensures equal height */
+}
+
+.report-card {
+    flex: 1;
+    min-width: 350px; /* Set a minimum width */
+    max-width: 400px; /* Optional, to prevent too wide cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.report-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* Keeps aspect ratio */
+}
+.reports-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+
+  </style>
+</head>
+<body>
+  
+  <!-- Unified Sticky Header with All Functionalities -->
+  <div class="sticky-header">
+    <div class="container">
+      <div class="header-row">
+        <!-- Title -->
+        <div class="d-flex align-items-center">
+          <h1 class="header-title"> Reports</h1>
+        </div>
+        <!-- Filter Form (Category Select & Filter Button) -->
+        <form method="get" action="{{ url_for('report') }}" class="d-flex align-items-center me-3">
+          <select name="category" id="categorySelect" class="form-select small-input me-2">
+            <option value="all" {% if selected_category == 'all' or not selected_category %}selected{% endif %}>All</option>
+            {% for cat in available_categories %}
+              <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-custom">Filter</button>
+        </form>
+        <!-- Search Form -->
+        <form method="get" action="{{ url_for('report') }}" class="d-flex align-items-center me-3">
+          <input type="text" name="search" class="form-control small-input me-2" placeholder="Search" value="{{ request.args.get('search', '') }}">
+          <button type="submit" class="btn btn-custom">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+        <!-- Download Options and Logout -->
+        <div class="d-flex align-items-center">
+          <select id="downloadTypeSelect" class="form-select small-input me-2" style="max-width: 150px;">
+            <option value="selected">Download Selected</option>
+            <option value="all">Download All</option>
+          </select>
+          <button type="button" onclick="submitDownloadFromSelect()" class="btn btn-custom me-2">
+            <i class="fas fa-download"></i>
+          </button>
+          <a href="{{ url_for('logout') }}" class="btn btn-custom">
+            <i class="fas fa-sign-out-alt"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Flash Message Container -->
+  <div id="flash-container" class="container mt-3"></div>
+  
+  <!-- Report Cards Section -->
+  <div class="container mt-4">
+    <form id="downloadForm" method="POST" action="{{ url_for('export_multi_pdf_combined') }}">
+      <input type="hidden" id="downloadType" name="downloadType" value="selected">
+      
+      {% if reports|length > 0 %}
+        <div class="row">
+          {% for report in reports %}
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                  <input type="checkbox" name="report_ids" value="{{ report._id }}" class="form-check-input me-2">
+                  {{ report.report_name }}
+                </div>
+                <a href="{{ url_for('export_pdf', report_id=report._id) }}" class="btn btn-custom btn-sm" title="Download PDF">
+                  <i class="fas fa-download"></i>
+                </a>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <span class="info-badge"><i class="fas fa-tag"></i> {{ report.category }}</span>
+                  <span class="info-badge"><i class="fas fa-calendar-alt"></i> {{ report.generated_at.strftime('%Y-%m-%d') }}</span>
+                  <span class="info-badge"><i class="fas fa-clock"></i> {{ report.generated_at.strftime('%H:%M:%S') }}</span>
+                </div>
+                {% if report.matches %}
+                <div class="match-details">
+                  <h6 class="mb-3">Detection Details</h6>
+                  {% for match in report.matches %}
+                  <div class="match-item">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <strong>{{ match.Celebrity.split('/')[1] }}</strong>
+                      <span class="confidence-badge">{{ match.Confidence }}% Confidence</span>
+                    </div>
+                    {% if match.image_url %}
+                      <img src="{{ match.image_url }}" class="match-image" alt="Detection snapshot"
+                           onerror="this.style.display='none'; this.parentElement.innerHTML+='<div class=\'alert alert-warning\'><i class=\'fas fa-exclamation-triangle\'></i> Image failed to load</div>'">
+                    {% else %}
+                      <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> No image available
+                      </div>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info">
+          No reports available for your selected category.
+        </div>
+      {% endif %}
+    </form>
+  </div>
+  
+  <script>
+    function submitDownload(downloadType) {
+      // If "Download Selected" is chosen, check if any report is selected.
+      if (downloadType === "selected") {
+        var selectedReports = document.querySelectorAll('input[name="report_ids"]:checked');
+        if (selectedReports.length === 0) {
+          document.getElementById("flash-container").innerHTML = '<div class="alert alert-danger" role="alert">No reports selected for download.</div>';
+          return;
+        }
+      }
+      document.getElementById("flash-container").innerHTML = "";
+      document.getElementById('downloadType').value = downloadType;
+      document.getElementById('downloadForm').submit();
+    }
+    function submitDownloadFromSelect() {
+      var downloadType = document.getElementById('downloadTypeSelect').value;
+      submitDownload(downloadType);
+    }
+  </script>
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
